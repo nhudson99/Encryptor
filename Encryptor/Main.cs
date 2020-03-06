@@ -108,7 +108,7 @@ namespace Encryptor
             try
             {
 
-                int index = -1;
+                int index = 0;
 
                 if (LbLoadedFiles.CheckedItems.Count > 1)
                 {
@@ -153,11 +153,11 @@ namespace Encryptor
                 }
 
                 //MessageBox.Show(loaded[index].bytes.Length.ToString());
-                //loaded[index].GenerateKey();
-                //MessageBox.Show(BitConverter.ToString(loaded[index].key));
-                //loaded[index].EncryptBlock();
-                //loaded[index].EncryptAES();
-                //loaded[index].WriteFiles(1);
+                loaded[index].GenerateKey();
+                MessageBox.Show(BitConverter.ToString(loaded[index].key));
+                loaded[index].EncryptBlock();
+                loaded[index].EncryptAES();
+                loaded[index].WriteFiles(1);
                 
 
             }
@@ -187,6 +187,7 @@ namespace Encryptor
                 //MessageBox.Show(BitConverter.ToString(loaded[index].key));
                 loaded[index].DecryptBlock();
                 loaded[index].WriteFiles(0);
+                //loaded[index].DecryptAES();
 
 
             }

@@ -25,7 +25,12 @@ namespace Encryptor
 
         public void normalizeFiles()
         {
-            fileExt = Path.GetExtension(filePath);
+            if(Path.GetExtension(filePath) == ".txt")
+            {
+                fileExt = ".txt";
+            }
+            //MessageBox.Show(filePath);
+            //fileExt = Path.GetExtension(filePath);
             string[] splitPath = filePath.Split('\\');
             filePath = "";
             
@@ -37,6 +42,7 @@ namespace Encryptor
             fileName = splis[0];
             //MessageBox.Show(filePath);
         }
+
         public static byte[] GenerateRandomSalt()
         {
             byte[] data = new byte[32];
@@ -170,11 +176,15 @@ namespace Encryptor
         public void WriteFiles(int n)
         {
             normalizeFiles();
+            //MessageBox.Show(fileExt);
 
             if (n == 1)
                 File.WriteAllBytes(filePath + fileName + "Encrypted" + fileExt, encBytes);
-            else if(n == 0)
+            else if (n == 0)
+            {
+                fileName = fileName.Replace("Encrypted", "");
                 File.WriteAllBytes(filePath + fileName + "Decrypted" + fileExt, decBytes);
+            }
         }
     }
 }
