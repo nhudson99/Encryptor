@@ -153,11 +153,11 @@ namespace Encryptor
                 }
 
                 //MessageBox.Show(loaded[index].bytes.Length.ToString());
-                loaded[index].GenerateKey();
-                MessageBox.Show(BitConverter.ToString(loaded[index].key));
+                //loaded[index].GenerateKey();
+                //MessageBox.Show(BitConverter.ToString(loaded[index].key));
                 loaded[index].EncryptBlock();
                 loaded[index].EncryptAES();
-                loaded[index].WriteFiles(1);
+                //loaded[index].WriteFiles(1);
                 
 
             }
@@ -175,18 +175,26 @@ namespace Encryptor
                         index = i;
                 }
 
-                //MessageBox.Show(loaded[index].bytes.Length.ToString());
-                //loaded[index].GetKey();
-                InsertKey ik = new InsertKey();
-                ik.ShowDialog();
-                //MessageBox.Show("Waited");
+                
+                if (loaded[index].fileName.Contains("AES"))
+                {
+                    loaded[index].DecryptAES();
+                }
+                else
+                {
+                    //MessageBox.Show(loaded[index].bytes.Length.ToString());
+                    //loaded[index].GetKey();
+                    //InsertKey ik = new InsertKey();
+                    //ik.ShowDialog();
+                    //MessageBox.Show("Waited");
 
-                loaded[index].key = ik.key;
-                MessageBox.Show(BitConverter.ToString(loaded[index].key));
+                    //loaded[index].key = ik.key;
+                    //MessageBox.Show(BitConverter.ToString(loaded[index].key));
 
-                //MessageBox.Show(BitConverter.ToString(loaded[index].key));
-                loaded[index].DecryptBlock();
-                loaded[index].WriteFiles(0);
+                    //MessageBox.Show(BitConverter.ToString(loaded[index].key));
+                    loaded[index].DecryptBlock();
+                    //loaded[index].WriteFiles(0);
+                }
                 //loaded[index].DecryptAES();
 
 

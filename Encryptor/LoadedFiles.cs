@@ -22,6 +22,7 @@ namespace Encryptor
         public byte[] encBytes;
         public byte[] decBytes;
         public byte[] key;
+        public byte[] bSalt;
 
         public void normalizeFiles()
         {
@@ -61,22 +62,41 @@ namespace Encryptor
 
         public void EncryptBlock()
         {
+            normalizeFiles();
             int i = 0;
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[32];
 
-            while (i < bytes.Length)
+            GenerateKey();
+            //MessageBox.Show(key.Length.ToString());
+            FileStream file = new FileStream(filePath + fileName + "Encrypted" + fileExt, FileMode.Create);
+            file.Write(bSalt, 0, bSalt.Length);
+            file.Close();
+            
+            try
             {
-                for (int j = 0; j < 4; j++)
+                while (i < bytes.Length)
                 {
-                    if (i != bytes.Length)
+                    for (int j = 0; j < 32; j++)
                     {
-                        buffer[j] = bytes[i];
-                        var b = buffer[j] << 1;
-                        encBytes[i] = (byte)(buffer[j] + key[j]);
-                        i++;
+                        if (i != bytes.Length)
+                        {
+                            buffer[j] = bytes[i];
+                          //  var b = buffer[j] << 1;
+                            encBytes[i] = (byte)(buffer[j] + key[j]);
+                            i++;
+                        }
                     }
                 }
             }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            FileStream file2 = new FileStream(filePath + fileName + "Encrypted" + fileExt, FileMode.Append);
+            //file2.Position = file.Length;
+            file2.Write(encBytes, 0, encBytes.Length);
+            file2.Close();
         }
 
         public void EncryptAES()
@@ -85,6 +105,7 @@ namespace Encryptor
             normalizeFiles();
 
             byte[] salt = GenerateRandomSalt();
+            MessageBox.Show(BitConverter.ToString(salt));
 
             FileStream fileCrypt = new FileStream(filePath + fileName + "AES" + fileExt, FileMode.Create);
 
@@ -134,14 +155,84 @@ namespace Encryptor
             }
         }
 
+        public void DecryptAES()
+        {
+
+            normalizeFiles();
+
+            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+            byte[] salt = new byte[32];
+
+            FileStream fsCrypt = new FileStream(filePath + fileName + fileExt, FileMode.Open);
+            fsCrypt.Read(salt, 0, salt.Length);
+
+            RijndaelManaged AES = new RijndaelManaged();
+            AES.KeySize = 256;
+            AES.BlockSize = 128;
+            var key = new Rfc2898DeriveBytes(passwordBytes, salt, 50000);
+            AES.Key = key.GetBytes(AES.KeySize / 8);
+            AES.IV = key.GetBytes(AES.BlockSize / 8);
+            AES.Padding = PaddingMode.PKCS7;
+            AES.Mode = CipherMode.CFB;
+
+            CryptoStream cs = new CryptoStream(fsCrypt, AES.CreateDecryptor(), CryptoStreamMode.Read);
+
+            FileStream fsOut = new FileStream(filePath + fileName + "Decrypted" + fileExt, FileMode.Create);
+
+            int read;
+            byte[] buffer = new byte[1048576];
+
+            try
+            {
+                while ((read = cs.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    Application.DoEvents();
+                    fsOut.Write(buffer, 0, read);
+                }
+            }
+            catch (CryptographicException ex_CryptographicException)
+            {
+                Console.WriteLine("CryptographicException error: " + ex_CryptographicException.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+
+            try
+            {
+                cs.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error by closing CryptoStream: " + ex.Message);
+            }
+            finally
+            {
+                fsOut.Close();
+                fsCrypt.Close();
+            }
+        }
+
         public void DecryptBlock()
         {
+            normalizeFiles();
+
             int i = 0;
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[32];
+            byte[] salt = new byte[32];
+            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+            //MessageBox.Show(filePath + fileName + fileExt);
+            FileStream file = new FileStream(filePath + fileName + fileExt, FileMode.Open);
+            file.Read(salt, 0, salt.Length);
+            MessageBox.Show(BitConverter.ToString(salt));
+
+            var key2 = new Rfc2898DeriveBytes(passBytes, salt, 50000);
+            key = key2.GetBytes(32);
 
             while (i < bytes.Length)
             {
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < 32; j++)
                 {
                     if (i != bytes.Length)
                     {
@@ -152,11 +243,13 @@ namespace Encryptor
                     }
                 }
             }
+            fileName = fileName.Replace("Encrypted", "");
+            File.WriteAllBytes(filePath + fileName + "Decrypted" + fileExt, decBytes);
         }
         public void GenerateKey()
         {
-            key = new byte[4];
-            Random rand = new Random();
+            key = new byte[32];
+            /*Random rand = new Random();
             for(int i = 0; i < 4; i++)
             {
                 
@@ -164,7 +257,14 @@ namespace Encryptor
                 int bit = rand.Next(0,255);
 
                 key[i] = Convert.ToByte(bit);
-            }
+            }*/
+
+            byte[] salt = GenerateRandomSalt();
+            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+
+            var key2 = new Rfc2898DeriveBytes(passBytes, salt, 50000);
+            key = key2.GetBytes(32);
+            bSalt = salt;
         }
         /*public bool GetKey()
         {
@@ -179,7 +279,11 @@ namespace Encryptor
             //MessageBox.Show(fileExt);
 
             if (n == 1)
-                File.WriteAllBytes(filePath + fileName + "Encrypted" + fileExt, encBytes);
+            {
+                FileStream file = new FileStream(filePath + fileName + "Encrypted" + fileExt, FileMode.Open);
+                file.Write(encBytes, 0, encBytes.Length);
+                file.Close();
+            }
             else if (n == 0)
             {
                 fileName = fileName.Replace("Encrypted", "");
