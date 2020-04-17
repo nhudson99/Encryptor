@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.Label label7;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.btnSource = new System.Windows.Forms.Button();
             this.btnEncrypt = new System.Windows.Forms.Button();
@@ -44,12 +45,27 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.btnTest = new System.Windows.Forms.Button();
+            this.txtPassword = new System.Windows.Forms.TextBox();
+            this.btnStats = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(548, 10);
+            label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(177, 13);
+            label7.TabIndex = 19;
+            label7.Text = "Password for Encryption/Decryption";
             // 
             // btnSource
             // 
             this.btnSource.Location = new System.Drawing.Point(46, 11);
-            this.btnSource.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSource.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSource.Name = "btnSource";
             this.btnSource.Size = new System.Drawing.Size(135, 26);
             this.btnSource.TabIndex = 2;
@@ -61,7 +77,7 @@
             // 
             this.btnEncrypt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.btnEncrypt.Location = new System.Drawing.Point(800, 237);
-            this.btnEncrypt.Margin = new System.Windows.Forms.Padding(2);
+            this.btnEncrypt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnEncrypt.Name = "btnEncrypt";
             this.btnEncrypt.Size = new System.Drawing.Size(292, 60);
             this.btnEncrypt.TabIndex = 3;
@@ -73,7 +89,7 @@
             // 
             this.btnDecrypt.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.btnDecrypt.Location = new System.Drawing.Point(800, 301);
-            this.btnDecrypt.Margin = new System.Windows.Forms.Padding(2);
+            this.btnDecrypt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnDecrypt.Name = "btnDecrypt";
             this.btnDecrypt.Size = new System.Drawing.Size(292, 60);
             this.btnDecrypt.TabIndex = 4;
@@ -85,7 +101,7 @@
             // 
             this.btnLoadFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.btnLoadFiles.Location = new System.Drawing.Point(800, 83);
-            this.btnLoadFiles.Margin = new System.Windows.Forms.Padding(2);
+            this.btnLoadFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnLoadFiles.Name = "btnLoadFiles";
             this.btnLoadFiles.Size = new System.Drawing.Size(134, 60);
             this.btnLoadFiles.TabIndex = 6;
@@ -98,16 +114,16 @@
             this.LbLoadedFiles.CheckOnClick = true;
             this.LbLoadedFiles.FormattingEnabled = true;
             this.LbLoadedFiles.Location = new System.Drawing.Point(548, 83);
-            this.LbLoadedFiles.Margin = new System.Windows.Forms.Padding(2);
+            this.LbLoadedFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.LbLoadedFiles.Name = "LbLoadedFiles";
-            this.LbLoadedFiles.Size = new System.Drawing.Size(204, 274);
+            this.LbLoadedFiles.Size = new System.Drawing.Size(204, 259);
             this.LbLoadedFiles.TabIndex = 7;
             // 
             // btnRemoveFiles
             // 
             this.btnRemoveFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.btnRemoveFiles.Location = new System.Drawing.Point(958, 83);
-            this.btnRemoveFiles.Margin = new System.Windows.Forms.Padding(2);
+            this.btnRemoveFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnRemoveFiles.Name = "btnRemoveFiles";
             this.btnRemoveFiles.Size = new System.Drawing.Size(134, 60);
             this.btnRemoveFiles.TabIndex = 8;
@@ -119,7 +135,7 @@
             // 
             this.btnPreview.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.btnPreview.Location = new System.Drawing.Point(800, 173);
-            this.btnPreview.Margin = new System.Windows.Forms.Padding(2);
+            this.btnPreview.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(292, 60);
             this.btnPreview.TabIndex = 9;
@@ -133,7 +149,7 @@
             this.cLbFolder.FormattingEnabled = true;
             this.cLbFolder.Location = new System.Drawing.Point(46, 81);
             this.cLbFolder.Name = "cLbFolder";
-            this.cLbFolder.Size = new System.Drawing.Size(421, 274);
+            this.cLbFolder.Size = new System.Drawing.Size(421, 259);
             this.cLbFolder.TabIndex = 10;
             // 
             // printPreviewDialog1
@@ -200,12 +216,58 @@
             this.label6.TabIndex = 16;
             this.label6.Text = "Select from Loaded Files to Perform Operations";
             // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(376, 23);
+            this.btnTest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(139, 23);
+            this.btnTest.TabIndex = 17;
+            this.btnTest.Text = "Test!";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Visible = false;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            // 
+            // txtPassword
+            // 
+            this.txtPassword.Location = new System.Drawing.Point(548, 27);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtPassword.Name = "txtPassword";
+            this.txtPassword.Size = new System.Drawing.Size(204, 20);
+            this.txtPassword.TabIndex = 18;
+            // 
+            // btnStats
+            // 
+            this.btnStats.Location = new System.Drawing.Point(548, 368);
+            this.btnStats.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnStats.Name = "btnStats";
+            this.btnStats.Size = new System.Drawing.Size(202, 29);
+            this.btnStats.TabIndex = 20;
+            this.btnStats.Text = "Statistics";
+            this.btnStats.UseVisualStyleBackColor = true;
+            this.btnStats.Click += new System.EventHandler(this.btnStats_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(390, 376);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(140, 13);
+            this.label8.TabIndex = 21;
+            this.label8.Text = "Encryption/Decryption Stats";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1123, 415);
+            this.ClientSize = new System.Drawing.Size(1118, 415);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.btnStats);
+            this.Controls.Add(label7);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.btnTest);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -220,7 +282,7 @@
             this.Controls.Add(this.btnDecrypt);
             this.Controls.Add(this.btnEncrypt);
             this.Controls.Add(this.btnSource);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Main";
             this.Padding = new System.Windows.Forms.Padding(50, 52, 50, 52);
             this.Text = "Encryptor";
@@ -245,6 +307,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Button btnStats;
+        private System.Windows.Forms.Label label8;
     }
 }
 

@@ -23,15 +23,17 @@ namespace Encryptor
         public byte[] decBytes;
         public byte[] key;
         public byte[] bSalt;
+        public string pWord;
 
         public void normalizeFiles()
         {
-            if(Path.GetExtension(filePath) == ".txt")
+            /*if(Path.GetExtension(filePath) == ".txt")
             {
                 fileExt = ".txt";
-            }
+            }*/
             //MessageBox.Show(filePath);
-            //fileExt = Path.GetExtension(filePath);
+            fileExt = Path.GetExtension(filePath);
+            //MessageBox.Show(fileExt);
             string[] splitPath = filePath.Split('\\');
             filePath = "";
             
@@ -42,6 +44,38 @@ namespace Encryptor
             string[] splis = fileName.Split('.');
             fileName = splis[0];
             //MessageBox.Show(filePath);
+        }
+
+        public void ProgressStart(int choice)
+        {
+            Progress p = new Progress();
+            p.Show();
+
+            Control[] pBarAES = p.Controls.Find("pBarAES", false);
+            Control[] pBarBlock = p.Controls.Find("pBarBlock", false);
+
+            if (choice == 0)
+            {
+                normalizeFiles();
+
+                EncryptAES(pBarAES[0]);
+                EncryptBlock(pBarBlock[0]);
+            }
+            else
+            {
+                normalizeFiles();
+                if (fileName.Contains("AES"))
+                {
+                    DecryptAES(pBarAES[0]);
+                }
+                else
+                {
+                    DecryptBlock(pBarBlock[0]);
+                    
+                }
+                //DecryptAES();
+                //DecryptBlock();
+            }
         }
 
         public static byte[] GenerateRandomSalt()
@@ -60,9 +94,9 @@ namespace Encryptor
             return data;
         }
 
-        public void EncryptBlock()
+        public void EncryptBlock(Control pBar)
         {
-            normalizeFiles();
+            //normalizeFiles();
             int i = 0;
             byte[] buffer = new byte[32];
 
@@ -71,6 +105,12 @@ namespace Encryptor
             FileStream file = new FileStream(filePath + fileName + "Encrypted" + fileExt, FileMode.Create);
             file.Write(bSalt, 0, bSalt.Length);
             file.Close();
+
+            ProgressBar pBlock = (ProgressBar)pBar;
+
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
             
             try
             {
@@ -84,6 +124,7 @@ namespace Encryptor
                           //  var b = buffer[j] << 1;
                             encBytes[i] = (byte)(buffer[j] + key[j]);
                             i++;
+                            pBlock.Increment(1);
                         }
                     }
                 }
@@ -93,23 +134,33 @@ namespace Encryptor
                 MessageBox.Show(ex.Message);
             }
 
+            watch.Stop();
+
             FileStream file2 = new FileStream(filePath + fileName + "Encrypted" + fileExt, FileMode.Append);
             //file2.Position = file.Length;
             file2.Write(encBytes, 0, encBytes.Length);
             file2.Close();
+
+            FileStream StatFile = new FileStream(filePath + "\\Stats\\Stats.txt", FileMode.Append);
+            string wString = fileName + fileExt + "\t\tEncryption Time: " + watch.ElapsedMilliseconds.ToString() + " ms \n";
+            byte[] wStringBytes = new UTF8Encoding(true).GetBytes(wString);
+            StatFile.Write(wStringBytes, 0, wStringBytes.Length);
+            StatFile.Close();
         }
 
-        public void EncryptAES()
+        public void EncryptAES(Control PBar)
         {
 
-            normalizeFiles();
+            //normalizeFiles();
+
+            ProgressBar pAES = (ProgressBar)PBar;
 
             byte[] salt = GenerateRandomSalt();
-            MessageBox.Show(BitConverter.ToString(salt));
+            //MessageBox.Show(BitConverter.ToString(salt));
 
             FileStream fileCrypt = new FileStream(filePath + fileName + "AES" + fileExt, FileMode.Create);
 
-            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes(pWord);
 
             RijndaelManaged AES = new RijndaelManaged();
             AES.KeySize = 256;
@@ -133,13 +184,21 @@ namespace Encryptor
             byte[] buffer = new byte[1048576];
             int read;
 
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
+
             try
             {
                 while ((read = fsIn.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    Application.DoEvents(); // -> for responsive GUI, using Task will be better!
+                    //Application.DoEvents(); // -> for responsive GUI, using Task will be better!
                     cs.Write(buffer, 0, read);
+                    pAES.Increment(1);
                 }
+
+                if (pAES.Value != pAES.Maximum)
+                    pAES.Value = pAES.Maximum;
 
                 // Close up
                 fsIn.Close();
@@ -153,14 +212,22 @@ namespace Encryptor
                 cs.Close();
                 fileCrypt.Close();
             }
+
+            watch.Stop();
+
+            FileStream StatFile = new FileStream(filePath + "\\Stats\\Stats.txt", FileMode.Append);
+            string wString = fileName + fileExt + "\t\tAES Encryption Time: " + watch.ElapsedMilliseconds.ToString() + " ms \n";
+            byte[] wStringBytes = new UTF8Encoding(true).GetBytes(wString);
+            StatFile.Write(wStringBytes, 0, wStringBytes.Length);
+            StatFile.Close();
         }
 
-        public void DecryptAES()
+        public void DecryptAES(Control pBar)
         {
 
-            normalizeFiles();
+            //normalizeFiles();
 
-            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(pWord);
             byte[] salt = new byte[32];
 
             FileStream fsCrypt = new FileStream(filePath + fileName + fileExt, FileMode.Open);
@@ -181,6 +248,10 @@ namespace Encryptor
 
             int read;
             byte[] buffer = new byte[1048576];
+
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
 
             try
             {
@@ -212,23 +283,45 @@ namespace Encryptor
                 fsOut.Close();
                 fsCrypt.Close();
             }
+
+            watch.Stop();
+            try
+            {
+                FileStream StatFile = new FileStream(filePath + "\\Stats\\Stats.txt", FileMode.Append);
+                string wString = fileName + fileExt + "\t\tAES Decryption Time: " + watch.ElapsedMilliseconds.ToString() + " ms \n";
+                byte[] wStringBytes = new UTF8Encoding(true).GetBytes(wString);
+                StatFile.Write(wStringBytes, 0, wStringBytes.Length);
+                StatFile.Close();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        public void DecryptBlock()
+        public void DecryptBlock(Control pBar)
         {
-            normalizeFiles();
+            //normalizeFiles();
 
-            int i = 0;
             byte[] buffer = new byte[32];
             byte[] salt = new byte[32];
-            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+            int i = 0;
+            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes(pWord);
             //MessageBox.Show(filePath + fileName + fileExt);
             FileStream file = new FileStream(filePath + fileName + fileExt, FileMode.Open);
             file.Read(salt, 0, salt.Length);
-            MessageBox.Show(BitConverter.ToString(salt));
+            file.Read(bytes, 0, (int)file.Length - salt.Length);
+            //MessageBox.Show(BitConverter.ToString(salt));
+
+            fileName = fileName.Replace("Encrypted", "");
+            //FileStream fOut = new FileStream(filePath + fileName + "Decrypted" + fileExt, FileMode.Create);
 
             var key2 = new Rfc2898DeriveBytes(passBytes, salt, 50000);
             key = key2.GetBytes(32);
+
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
 
             while (i < bytes.Length)
             {
@@ -237,14 +330,31 @@ namespace Encryptor
                     if (i != bytes.Length)
                     {
                         buffer[j] = bytes[i];
-                        var b = buffer[j] << 1;
+                        byte[] b =  new byte[32];
                         decBytes[i] = (byte)(buffer[j] - key[j]);
+                        //buffer[j] = (byte)(buffer[j] - key[j]);
+                        //fOut.Write(buffer, i, buffer.Length);
+                        //fOut.Read(b, 0, 32);
                         i++;
                     }
                 }
             }
-            fileName = fileName.Replace("Encrypted", "");
+            /*Test stopwatch
+            for (int k = 0; k < 10000; k++)
+                Console.WriteLine("Hello");
+                */
+
+            watch.Stop();
+            //fileName = fileName.Replace("Encrypted", "");
             File.WriteAllBytes(filePath + fileName + "Decrypted" + fileExt, decBytes);
+            //fOut.Close();
+
+            FileStream StatFile = new FileStream(filePath + "\\Stats\\Stats.txt", FileMode.Append);
+            string wString = fileName + fileExt + "\t\tDecryption Time: " + watch.ElapsedMilliseconds.ToString() + " ms \n";
+            byte[] wStringBytes = new UTF8Encoding(true).GetBytes(wString);
+            StatFile.Write(wStringBytes, 0, wStringBytes.Length);
+            StatFile.Close();
+
         }
         public void GenerateKey()
         {
@@ -260,7 +370,7 @@ namespace Encryptor
             }*/
 
             byte[] salt = GenerateRandomSalt();
-            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes("Password");
+            byte[] passBytes = System.Text.Encoding.UTF8.GetBytes(pWord);
 
             var key2 = new Rfc2898DeriveBytes(passBytes, salt, 50000);
             key = key2.GetBytes(32);
