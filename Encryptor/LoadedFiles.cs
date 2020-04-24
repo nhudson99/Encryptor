@@ -49,7 +49,7 @@ namespace Encryptor
         public void ProgressStart(int choice)
         {
             Progress p = new Progress();
-            p.Show();
+            //p.Show();
 
             Control[] pBarAES = p.Controls.Find("pBarAES", false);
             Control[] pBarBlock = p.Controls.Find("pBarBlock", false);
@@ -58,19 +58,29 @@ namespace Encryptor
             {
                 normalizeFiles();
 
+                p.Show();
+
                 EncryptAES(pBarAES[0]);
                 EncryptBlock(pBarBlock[0]);
+                p.CheckProgress();
             }
             else
             {
                 normalizeFiles();
                 if (fileName.Contains("AES"))
                 {
+                    p.dec = true;
+                    p.aes = true;
+                    p.Show();
                     DecryptAES(pBarAES[0]);
+                    p.CheckProgress();
                 }
                 else
                 {
+                    p.dec = true;
+                    p.Show();
                     DecryptBlock(pBarBlock[0]);
+                    p.CheckProgress();
                     
                 }
                 //DecryptAES();
@@ -230,6 +240,8 @@ namespace Encryptor
             byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(pWord);
             byte[] salt = new byte[32];
 
+            ProgressBar pAES = (ProgressBar)pBar;
+
             FileStream fsCrypt = new FileStream(filePath + fileName + fileExt, FileMode.Open);
             fsCrypt.Read(salt, 0, salt.Length);
 
@@ -259,7 +271,11 @@ namespace Encryptor
                 {
                     Application.DoEvents();
                     fsOut.Write(buffer, 0, read);
+                    pAES.Increment(1);
                 }
+
+                if (pAES.Value != pAES.Maximum)
+                    pAES.Value = pAES.Maximum;
             }
             catch (CryptographicException ex_CryptographicException)
             {
@@ -307,6 +323,9 @@ namespace Encryptor
             byte[] salt = new byte[32];
             int i = 0;
             byte[] passBytes = System.Text.Encoding.UTF8.GetBytes(pWord);
+
+            ProgressBar pBlock = (ProgressBar)pBar;
+
             //MessageBox.Show(filePath + fileName + fileExt);
             FileStream file = new FileStream(filePath + fileName + fileExt, FileMode.Open);
             file.Read(salt, 0, salt.Length);
@@ -336,6 +355,7 @@ namespace Encryptor
                         //fOut.Write(buffer, i, buffer.Length);
                         //fOut.Read(b, 0, 32);
                         i++;
+                        pBlock.Increment(1);
                     }
                 }
             }

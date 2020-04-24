@@ -12,6 +12,8 @@ namespace Encryptor
 {
     public partial class Progress : Form
     {
+        public bool dec = false;
+        public bool aes = false;
         public Progress()
         {
             InitializeComponent();
@@ -22,18 +24,19 @@ namespace Encryptor
             /* Test */
             bool tester = true;
 
-            while(tester)
+            if (dec)
             {
-                if (pBarAES.Value != pBarAES.Maximum && pBarBlock.Value != pBarBlock.Maximum)
+                if (aes)
                 {
-                    lblComplete.Text = "Complete";
-                    btnClose.Enabled = true;
-                    tester = false;
+                    pBarBlock.Hide();
+                }
+                else
+                {
+                    pBarAES.Hide();
+                    
                 }
             }
-
-            lblComplete.Text = "Complete!";
-            btnClose.Enabled = true;
+            
             
         }
 
@@ -63,6 +66,39 @@ namespace Encryptor
         private void Progress_FormClosing(object sender, FormClosingEventArgs e)
         {
             
+        }
+
+        public void CheckProgress()
+        {
+            if (dec)
+            {
+                if (aes)
+                {
+                    if (pBarAES.Value == pBarAES.Maximum)
+                    {
+                        lblComplete.Text = "Complete";
+                        btnClose.Enabled = true;
+                    }
+                }
+                else
+                {
+
+                    if (pBarBlock.Value == pBarBlock.Maximum)
+                    {
+                        lblComplete.Text = "Complete";
+                        btnClose.Enabled = true;
+                    }
+                }
+            }
+            else
+            {
+
+                if (pBarAES.Value == pBarAES.Maximum && pBarBlock.Value == pBarBlock.Maximum)
+                {
+                    lblComplete.Text = "Complete";
+                    btnClose.Enabled = true;
+                }
+            }
         }
     }
 }

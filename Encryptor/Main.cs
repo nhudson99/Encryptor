@@ -126,6 +126,17 @@ namespace Encryptor
             foreach (var item in LbLoadedFiles.CheckedItems.OfType<string>().ToList())
             {
                 LbLoadedFiles.Items.Remove(item);
+
+                int index = -1;
+                for (int i = 0; i<loaded.Count;i++)
+                {
+                    if (loaded[i].fileName == item)
+                        index = i;
+                }
+                if (index == -1)
+                    break;
+                MessageBox.Show("No Error");
+                loaded.RemoveAt(index);
             }
         }
 
@@ -167,6 +178,10 @@ namespace Encryptor
 
                     preview.Show();
                 }
+                else
+                {
+                    throw new Exception("Cannot Preview Files of this type");
+                }
             }catch(Exception ex)
             {
                 MessageBox.Show(ex.Message);
@@ -176,19 +191,22 @@ namespace Encryptor
 
         private void btnEncrypt_Click(object sender, EventArgs e)
         {
-            int index = -1;
+            //int index = -1;
             try
             {
+                int index = -1;
                 if (LbLoadedFiles.CheckedItems.Count != 1)
                     throw new Exception("Only one item can be selected at a time");
 
                 foreach (string s in LbLoadedFiles.CheckedItems)
                 {
+                    //MessageBox.Show("Before for loop");
                     for (int i = 0; i < loaded.Count(); i++)
                     {
                         if (loaded[i].fileName == s)
                             index = i;
                     }
+                    //MessageBox.Show("After for loop");
 
                     loaded[index].ProgressStart(0);
                     ReloadFolderItems();
@@ -220,11 +238,13 @@ namespace Encryptor
                 foreach (string s in LbLoadedFiles.CheckedItems)
                 {
                     int index = -1;
+                    //MessageBox.Show("Before");
                     for (int i = 0; i < loaded.Count(); i++)
                     {
                         if (loaded[i].fileName == s)
                             index = i;
                     }
+                    //MessageBox.Show("After");
 
                     loaded[index].ProgressStart(1);
                     ReloadFolderItems();
