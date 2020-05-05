@@ -83,6 +83,10 @@ namespace Encryptor
             }
             try
             {
+                if(cLbFolder.CheckedItems.Count == 0)
+                {
+                    throw new Exception("You must select at least one item in Folder Files");
+                }
                 for (i = 0; i < itemCount; i++)
                 {
                     loaded.Add(new LoadedFiles());
@@ -123,20 +127,34 @@ namespace Encryptor
 
         private void btnRemoveFiles_Click(object sender, EventArgs e)
         {
-            foreach (var item in LbLoadedFiles.CheckedItems.OfType<string>().ToList())
+            try
             {
-                LbLoadedFiles.Items.Remove(item);
-
-                int index = -1;
-                for (int i = 0; i<loaded.Count;i++)
+                if(LbLoadedFiles.CheckedItems.Count == 0)
                 {
-                    if (loaded[i].fileName == item)
-                        index = i;
+                    throw new Exception("You must select at least one item in Loaded Files");
                 }
-                if (index == -1)
-                    break;
-                MessageBox.Show("No Error");
-                loaded.RemoveAt(index);
+                foreach (string s in LbLoadedFiles.CheckedItems)
+                {
+                    int index = -1;
+                    for (int i = 0; i < loaded.Count; i++)
+                    {
+                        if (loaded[i].fileName == s)
+                            index = i;
+                    }
+                    if (index == -1)
+                        break;
+                    //MessageBox.Show("No Error");
+                    loaded.RemoveAt(index);
+                }
+
+                foreach (var item in LbLoadedFiles.CheckedItems.OfType<string>().ToList())
+                {
+                    LbLoadedFiles.Items.Remove(item);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -158,6 +176,10 @@ namespace Encryptor
                 if (LbLoadedFiles.CheckedItems.Count > 1)
                 {
                     throw new Exception("Cannot preview more than 1 file at a time");
+                }
+                if(LbLoadedFiles.CheckedItems.Count == 0)
+                {
+                    throw new Exception("You must select at least one item in Loaded Files");
                 }
 
                 for (int i = 0; i < loaded.Count(); i++)
@@ -197,17 +219,25 @@ namespace Encryptor
                 int index = -1;
                 if (LbLoadedFiles.CheckedItems.Count != 1)
                     throw new Exception("Only one item can be selected at a time");
+                if (LbLoadedFiles.CheckedItems.Count == 0)
+                {
+                    throw new Exception("You must select at least one item in Loaded Files");
+                }
 
                 foreach (string s in LbLoadedFiles.CheckedItems)
                 {
                     //MessageBox.Show("Before for loop");
                     for (int i = 0; i < loaded.Count(); i++)
                     {
+                        //loaded[i].normalizeFiles
                         if (loaded[i].fileName == s)
                             index = i;
                     }
                     //MessageBox.Show("After for loop");
-
+                    if (index == -1)
+                        throw new Exception("Index incorrect");
+                    loaded[index].pWord = txtPassword.Text.ToString();
+                    //MessageBox.Show("Progess start");
                     loaded[index].ProgressStart(0);
                     ReloadFolderItems();
                     //MessageBox.Show(loaded[index].bytes.Length.ToString());
@@ -235,17 +265,28 @@ namespace Encryptor
             //int index = -1;
             try
             {
+                
+                if (LbLoadedFiles.CheckedItems.Count != 1)
+                    throw new Exception("Only one item can be selected at a time");
+                if (LbLoadedFiles.CheckedItems.Count == 0)
+                {
+                    throw new Exception("You must select at least one item in Loaded Files");
+                }
+
                 foreach (string s in LbLoadedFiles.CheckedItems)
                 {
                     int index = -1;
                     //MessageBox.Show("Before");
                     for (int i = 0; i < loaded.Count(); i++)
                     {
+                        //loaded[i].normalizeFiles();
                         if (loaded[i].fileName == s)
                             index = i;
                     }
                     //MessageBox.Show("After");
-
+                    if (index == -1)
+                        throw new Exception("Index incorrect");
+                    loaded[index].pWord = txtPassword.Text.ToString();
                     loaded[index].ProgressStart(1);
                     ReloadFolderItems();
                     /*

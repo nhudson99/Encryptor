@@ -59,7 +59,7 @@ namespace Encryptor
                 normalizeFiles();
 
                 p.Show();
-
+                //MessageBox.Show("Encryption Start");
                 EncryptAES(pBarAES[0]);
                 EncryptBlock(pBarBlock[0]);
                 p.CheckProgress();

@@ -37,7 +37,7 @@
             // pBarAES
             // 
             this.pBarAES.Location = new System.Drawing.Point(94, 68);
-            this.pBarAES.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pBarAES.Margin = new System.Windows.Forms.Padding(2);
             this.pBarAES.Name = "pBarAES";
             this.pBarAES.Size = new System.Drawing.Size(228, 26);
             this.pBarAES.TabIndex = 0;
@@ -57,7 +57,7 @@
             // 
             this.btnClose.Enabled = false;
             this.btnClose.Location = new System.Drawing.Point(169, 162);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(2);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(68, 29);
             this.btnClose.TabIndex = 2;
@@ -68,7 +68,7 @@
             // pBarBlock
             // 
             this.pBarBlock.Location = new System.Drawing.Point(94, 109);
-            this.pBarBlock.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pBarBlock.Margin = new System.Windows.Forms.Padding(2);
             this.pBarBlock.Name = "pBarBlock";
             this.pBarBlock.Size = new System.Drawing.Size(228, 26);
             this.pBarBlock.TabIndex = 3;
@@ -83,7 +83,7 @@
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.lblComplete);
             this.Controls.Add(this.pBarAES);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Progress";
             this.Text = "Progress";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Progress_FormClosing);
